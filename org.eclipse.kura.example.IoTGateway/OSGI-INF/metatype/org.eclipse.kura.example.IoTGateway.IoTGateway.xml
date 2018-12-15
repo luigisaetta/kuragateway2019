@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MetaData xmlns="http://www.osgi.org/xmlns/metatype/v1.2.0"
+	localization="en_us">
+	<OCD id="org.eclipse.kura.example.IoTGateway.IoTGateway"
+		name="IoTGateway"
+		description="This is the configuration for the IoTGateway Kura bundle">
+		
+		<AD id="mode.test" name="mode.test" 
+		    type="Boolean"
+			cardinality="0" 
+			required="true" 
+			default="true"
+			description="Test mode">
+		</AD>	
+		<AD id="msglog.enable" name="msglog.enable" 
+		    type="Boolean"
+			cardinality="0" 
+			required="true" 
+			default="false"
+			description="Enable logging of incoming messages">
+		</AD>
+		<AD id="blink.enable" name="blink.enable" 
+		    type="Boolean"
+			cardinality="0" 
+			required="true" 
+			default="false"
+			description="Enable led blink">
+		</AD>
+		
+		<AD id="ta.pathname" name="ta.pathname" type="String"
+			cardinality="0" required="true" 
+			default="/home/pi/orakuraconfig/rpikura3"
+			description="Trusted assett store pathName" />
+
+		<AD id="ta.pwd" name="ta.pwd" type="Password" cardinality="0"
+			required="true" default="Amsterdam1"
+			description="Trusted assett store password" />
+
+		<AD id="msg.topic" name="msg.topic" type="String" cardinality="0"
+			required="true" default="device/AIRCARE/MSG"
+			description="The MQTT TOPIC we're subscribing (can contain + for single level wildcard)" />
+
+		<AD id="msg.type" name="msg.type" type="String" cardinality="0"
+			required="true" default="AIRCARE" 
+			description="The Message Type">
+			<Option label="OBD2" value="OBD2" />
+			<Option label="TEMP" value="TEMP" />
+			<Option label="BLE" value="BLE" />
+			<Option label="EDISON" value="EDISON" />
+			<Option label="SMART_LIGHT" value="SMART_LIGHT" />
+			<Option label="AIRCARE" value="AIRCARE" />
+		</AD>
+		
+		<AD id="pin.num" name="pin.num" type="Integer"
+			cardinality="0" required="true" default="17"
+			description="The GPIO pin used for LED BLINK" />
+		
+		<AD id="topic.recognition" name="topic.recognition" 
+		    type="Boolean"
+			cardinality="0" 
+			required="true" 
+			default="false"
+			description="Enable TOPIC based message recognition (experimental)">
+		</AD>	
+
+	</OCD>
+
+	<Designate
+		pid="org.eclipse.kura.example.IoTGateway.IoTGateway">
+		<Object
+			ocdref="org.eclipse.kura.example.IoTGateway.IoTGateway" />
+	</Designate>
+</MetaData>
