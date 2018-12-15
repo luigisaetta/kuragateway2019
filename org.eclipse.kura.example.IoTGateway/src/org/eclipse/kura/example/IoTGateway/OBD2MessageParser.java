@@ -1,8 +1,12 @@
 package org.eclipse.kura.example.IoTGateway;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
+/*
+ * 
+ * Dicembre 2018
+ * 
+ */
 public class OBD2MessageParser extends MessageParser
 {
 	int MIN_LENGTH = 70;
