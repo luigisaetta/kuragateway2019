@@ -1,5 +1,10 @@
 package org.eclipse.kura.example.IoTGateway;
 
+/*
+ * 
+ * Dicembre 2019
+ * 
+ */
 public class IoTClientFactory
 {
 	public static OracleIoTBaseClient createIoTClient(String msgType,String tasPath, String tasPwd )
