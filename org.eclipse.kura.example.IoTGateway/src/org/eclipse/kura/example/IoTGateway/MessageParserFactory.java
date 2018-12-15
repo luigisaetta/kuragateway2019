@@ -29,7 +29,7 @@ public class MessageParserFactory
 	{
 		int vRit = -1;
 
-		if (msg.contains("PM10"))
+		if (msg.toLowerCase().contains("pm10"))
 		{
 			vRit = TYPE_AIRCARE;
 		}
@@ -47,12 +47,12 @@ public class MessageParserFactory
 			vRit = TYPE_TEMP;
 		}
 
-		if (msg.contains("uuid"))
+		if (msg.toLowerCase().contains("uuid"))
 		{
 			vRit = TYPE_BLE;
 		}
 
-		if (msg.contains("LIGHT_STATUS"))
+		if (msg.toLowerCase().contains("light_status"))
 		{
 			vRit = TYPE_LIGHT;
 		}

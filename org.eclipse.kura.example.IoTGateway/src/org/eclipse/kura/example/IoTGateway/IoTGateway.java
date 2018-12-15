@@ -325,7 +325,7 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 			{
 				// switch eliminated using polimorphism and set of derived classes
 				// which one?
-				if (iMsg > 0)
+				if (iMsg >= 0)
 				{
 					// recognized...based on iMsg get the right type of client
 					iotClientArr.get(iMsg).send(parserArr.get(iMsg).parse(msg));
