@@ -9,7 +9,7 @@ import java.util.ArrayList;
  */
 public class IoTClientFactory
 {
-	public static ArrayList<OracleIoTBaseClient> createIoTClient(String tasPath, String tasPwd )
+	public static ArrayList<OracleIoTBaseClient> createIoTClient(String tasPath, String tasPwd)
 	{
 		ArrayList<OracleIoTBaseClient> iotClients = new ArrayList<OracleIoTBaseClient>();
 		
@@ -17,18 +17,8 @@ public class IoTClientFactory
 		iotClients.add(new OracleIoTEdisonClient(tasPath, tasPwd));
 		iotClients.add(new OracleIoTOBD2Client(tasPath, tasPwd));
 		iotClients.add(new OracleIoTTempClient(tasPath, tasPwd));
-		
-		/*switch (msgType)
-		{	
-			case "BLE":
-				iotClient = new OracleIoTBLEClient(tasPath, tasPwd);
-				break;
-				
-			
-			case "SMART_LIGHT":
-				iotClient = new OracleIoTSmartLightClient(tasPath, tasPwd);
-				break;
-		}*/
+		iotClients.add(new OracleIoTBLEClient(tasPath, tasPwd));
+	    iotClients.add(new OracleIoTSmartLightClient(tasPath, tasPwd));
 		
 		return iotClients;
 	}

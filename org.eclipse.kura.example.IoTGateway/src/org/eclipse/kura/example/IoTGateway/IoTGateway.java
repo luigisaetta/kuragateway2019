@@ -21,12 +21,7 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 	private static final Logger s_logger = LoggerFactory.getLogger(IoTGateway.class);
 
 	private static final String APP_ID = "org.eclipse.kura.example.IoTGateway";
-	
-	private static final int TYPE_AIRCARE = 0;
-	private static final int TYPE_EDISON = 1;
-	private static final int TYPE_OBD2 = 2;
-	private static final int TYPE_TEMP = 3;
-	
+
 	/*
 	 * Parameters configurable from UI
 	 */
@@ -43,7 +38,7 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 	ArrayList<MessageParser> parserArr = null;
 
 	/*
-	 * 0: AIRCARE 1: EDISON 2: OBD2 3: TEMP
+	 * 0: AIRCARE 1: EDISON 2: OBD2 3: TEMP, 4: BLE, 5: SMART_LIGHT
 	 * 
 	 */
 	ArrayList<OracleIoTBaseClient> iotClientArr = null;
@@ -158,7 +153,6 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 			handleMsgTopicChanged(properties);
 		}
 
-
 		// changed ta pathname
 		if (hasPropertyChanged(properties, "ta.pathname"))
 		{
@@ -231,7 +225,6 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 
 		activateLED(PIN_NUM);
 	}
-
 
 	private void handleMsgTopicChanged(Map<String, Object> properties)
 	{
@@ -307,24 +300,7 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 			// if NOT test mode... LAZY ACTIVATION of IoT Client (when first needed)
 			if ((!isTestMode()) && !isOracleClientActivated)
 			{
-				try
-				{
-					Iterator<OracleIoTBaseClient> it = iotClientArr.iterator();
-					
-					while (it.hasNext())
-					{
-						OracleIoTBaseClient bc = (OracleIoTBaseClient) it.next();
-					    
-						bc.activateOracleGateway();
-					}
-
-					isOracleClientActivated = true;
-				} catch (Exception e)
-				{
-					error("in onMessageArrived...");
-
-					e.printStackTrace();
-				}
+				activateOracleGateway();
 			}
 
 			// blink LED on GPIO PIN_NUM
@@ -336,24 +312,22 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 			// transform the MQTT payload in a String
 			String msg = new String(payload);
 
-			// recognize msg type
-			int iMsg = recognizeMsg(msg);
-			
-			info("Message Type is: " + iMsg);
-
 			// log message only if enabled
-			msgLog(iMsg, msg);
+			msgLog(msg);
+						
+			// recognize msg type
+			int iMsg = MessageParserFactory.recognizeMsg(msg);
+
+			info("Message Type is: " + iMsg);
 
 			// NO test mode... send the msg to IoT
 			if (!isTestMode())
 			{
 				// switch eliminated using polimorphism and set of derived classes
 				// which one?
-				
-				
 				if (iMsg > 0)
 				{
-					// recognized...
+					// recognized...based on iMsg get the right type of client
 					iotClientArr.get(iMsg).send(parserArr.get(iMsg).parse(msg));
 				}
 			}
@@ -361,10 +335,33 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 
 	}
 
+	private void activateOracleGateway()
+	{
+		try
+		{
+			Iterator<OracleIoTBaseClient> it = iotClientArr.iterator();
+
+			while (it.hasNext())
+			{
+				OracleIoTBaseClient bc = (OracleIoTBaseClient) it.next();
+				
+				// it also load device models
+				bc.activateOracleGateway();
+			}
+
+			isOracleClientActivated = true;
+		} catch (Exception e)
+		{
+			error("in onMessageArrived...");
+
+			e.printStackTrace();
+		}
+	}
+
 	private void dump(String msg)
 	{
 		// this object take care of the appropriate action for each type of msg
-		new MessageDumper().dump(recognizeMsg(msg), msg);
+		new MessageDumper().dump(msg);
 	}
 
 	@Override
@@ -506,7 +503,6 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 				}
 			}
 		}
-
 		return vRit;
 	}
 
@@ -544,7 +540,7 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 	 * log incoming messages. If test mode, parse and dump contents
 	 * 
 	 */
-	private void msgLog(int msgType, String msg)
+	private void msgLog(String msg)
 	{
 		if ((boolean) getProperty("msglog.enable") == true)
 		{
@@ -555,31 +551,6 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 				dump(msg);
 			}
 		}
-	}
-
-	private int recognizeMsg(String msg)
-	{
-		int vRit = -1;
-
-		if (msg.contains("PM10"))
-		{
-			vRit = TYPE_AIRCARE;
-		}
-		if (msg.contains("Source"))
-		{
-			vRit = TYPE_EDISON; 
-		}
-		if (msg.contains("CARID"))
-		{
-			vRit = TYPE_OBD2; 
-		}
-		
-		if (msg.contains("DEV_ID"))
-		{
-			vRit = TYPE_TEMP;
-		}
-		
-		return vRit;
 	}
 
 	/*

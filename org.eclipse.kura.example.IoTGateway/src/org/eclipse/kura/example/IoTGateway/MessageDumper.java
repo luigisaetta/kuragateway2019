@@ -22,16 +22,20 @@ public class MessageDumper
 	private static final int TYPE_EDISON = 1;
 	private static final int TYPE_OBD2 = 2;
 	private static final int TYPE_TEMP = 3;
+	private static final int TYPE_BLE = 4;
+	private static final int TYPE_LIGHT = 5;
 	
-	
-	public void dump(int msgIndex, String msg)
+	public void dump(String msg)
 	{
 		ArrayList<MessageParser> parserArr = MessageParserFactory.createParser();
 		
+		// recognize msgType
+		int msgIndex = MessageParserFactory.recognizeMsg(msg);
+		
 		switch (msgIndex)
 		{
-		    /*case "BLE":
-			BLEMessage bMsg = (BLEMessage) parser.parse(msg);
+		 case TYPE_BLE:
+			BLEMessage bMsg = (BLEMessage) parserArr.get(msgIndex).parse(msg);
 
 			if ((bMsg != null) && (bMsg.getMetrics() != null))
 			{
@@ -39,7 +43,7 @@ public class MessageDumper
 				info("Major: " + bMsg.getMetrics().getMajor());
 				info("Minor: " + bMsg.getMetrics().getMinor());
 			}
-			break;*/
+			break;
 		
 		case TYPE_EDISON:
 			EdisonMessage eMsg = (EdisonMessage) parserArr.get(msgIndex).parse(msg);
@@ -53,14 +57,14 @@ public class MessageDumper
 			}
 			break;
 
-		/*case "SMART_LIGHT":
+		case TYPE_LIGHT:
 			SmartLightMessage sMsg = (SmartLightMessage) parserArr.get(msgIndex).parse(msg);
 
 			if (sMsg != null)
 			{
 				info("Light Status: " + sMsg.getLightStatus());
 			}
-			break;*/
+			break;
 		
 		case TYPE_TEMP:
 			TempMessage tMsg = (TempMessage) parserArr.get(msgIndex).parse(msg);
