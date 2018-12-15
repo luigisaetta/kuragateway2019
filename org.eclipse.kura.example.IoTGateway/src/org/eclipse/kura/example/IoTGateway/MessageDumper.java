@@ -1,5 +1,7 @@
 package org.eclipse.kura.example.IoTGateway;
 
+import java.util.ArrayList;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,13 +18,19 @@ public class MessageDumper
 {
 	private static final Logger s_logger = LoggerFactory.getLogger(MessageDumper.class);
 	
-	public void dump(String messageType, String msg)
+	private static final int TYPE_AIRCARE = 0;
+	private static final int TYPE_EDISON = 1;
+	private static final int TYPE_OBD2 = 2;
+	private static final int TYPE_TEMP = 3;
+	
+	
+	public void dump(int msgIndex, String msg)
 	{
-		MessageParser parser = MessageParserFactory.createParser(messageType);
+		ArrayList<MessageParser> parserArr = MessageParserFactory.createParser();
 		
-		switch (messageType)
+		switch (msgIndex)
 		{
-		case "BLE":
+		    /*case "BLE":
 			BLEMessage bMsg = (BLEMessage) parser.parse(msg);
 
 			if ((bMsg != null) && (bMsg.getMetrics() != null))
@@ -31,10 +39,10 @@ public class MessageDumper
 				info("Major: " + bMsg.getMetrics().getMajor());
 				info("Minor: " + bMsg.getMetrics().getMinor());
 			}
-			break;
+			break;*/
 		
-		case "EDISON":
-			EdisonMessage eMsg = (EdisonMessage) parser.parse(msg);
+		case TYPE_EDISON:
+			EdisonMessage eMsg = (EdisonMessage) parserArr.get(msgIndex).parse(msg);
 
 			if (eMsg != null)
 			{
@@ -45,17 +53,17 @@ public class MessageDumper
 			}
 			break;
 
-		case "SMART_LIGHT":
-			SmartLightMessage sMsg = (SmartLightMessage) parser.parse(msg);
+		/*case "SMART_LIGHT":
+			SmartLightMessage sMsg = (SmartLightMessage) parserArr.get(msgIndex).parse(msg);
 
 			if (sMsg != null)
 			{
 				info("Light Status: " + sMsg.getLightStatus());
 			}
-			break;
+			break;*/
 		
-		case "TEMP":
-			TempMessage tMsg = (TempMessage) parser.parse(msg);
+		case TYPE_TEMP:
+			TempMessage tMsg = (TempMessage) parserArr.get(msgIndex).parse(msg);
 
 			if (tMsg != null)
 			{
@@ -65,8 +73,8 @@ public class MessageDumper
 			}
 			break;
 			
-		case "AIRCARE":
-			AircareMessage aMsg = (AircareMessage) parser.parse(msg);
+		case TYPE_AIRCARE:
+			AircareMessage aMsg = (AircareMessage) parserArr.get(msgIndex).parse(msg);
 
 			if (aMsg != null)
 			{
@@ -76,8 +84,8 @@ public class MessageDumper
 			}
 			break;
 		
-		case "OBD2":
-			OBD2Message oMsg = (OBD2Message) parser.parse(msg);
+		case TYPE_OBD2:
+			OBD2Message oMsg = (OBD2Message) parserArr.get(msgIndex).parse(msg);
 
 			if (oMsg != null)
 			{

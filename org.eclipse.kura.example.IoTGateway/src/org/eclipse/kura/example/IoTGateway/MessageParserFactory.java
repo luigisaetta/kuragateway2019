@@ -1,54 +1,19 @@
 package org.eclipse.kura.example.IoTGateway;
 
+import java.util.ArrayList;
+
 public class MessageParserFactory
 {
-	public static String identifyMsgType(String msg)
-	{
-		// identify msgType from the first message
-		String msgType = null;
-		
-		if (msg.contains("MAF"))
-			msgType = "OBD2";
-		else
-		{
-			if (msg.contains("rssi"))
-				msgType = "BLE";
-			else
-				msgType = "TEMP";
-		}
-		return msgType;
-	}
 	
-	public static MessageParser createParser(String msgType)
+	public static ArrayList<MessageParser> createParser()
 	{
-		MessageParser processor = null;
+		ArrayList<MessageParser> list = new ArrayList<MessageParser>();
 		
+		list.add(new AircareMessageParser());
+		list.add(new EdisonMessageParser());
+		list.add(new OBD2MessageParser());
+		list.add(new TempMessageParser());
 		
-		switch (msgType)
-		{
-			case "TEMP":
-				processor = new TempMessageParser();
-				break;
-			
-			case "OBD2":
-				processor = new OBD2MessageParser();
-				break;
-			
-			case "BLE":
-				processor = new BLEMessageParser();
-				break;
-				
-			case "EDISON":
-				processor = new EdisonMessageParser();
-				break;
-			
-			case "SMART_LIGHT":
-				processor = new SmartLightMessageParser();
-				break;
-			case "AIRCARE":
-				processor = new AircareMessageParser();
-				break;
-		}
-		return processor;
+		return list;
 	}
 }

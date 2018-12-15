@@ -21,7 +21,12 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 	private static final Logger s_logger = LoggerFactory.getLogger(IoTGateway.class);
 
 	private static final String APP_ID = "org.eclipse.kura.example.IoTGateway";
-
+	
+	private static final int TYPE_AIRCARE = 0;
+	private static final int TYPE_EDISON = 1;
+	private static final int TYPE_OBD2 = 2;
+	private static final int TYPE_TEMP = 3;
+	
 	/*
 	 * Parameters configurable from UI
 	 */
@@ -35,9 +40,13 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 	// CryptoService
 	private CryptoService _cryptoService;
 
-	MessageParser parser = null;
+	ArrayList<MessageParser> parserArr = null;
 
-	OracleIoTBaseClient iotClient = null;
+	/*
+	 * 0: AIRCARE 1: EDISON 2: OBD2 3: TEMP
+	 * 
+	 */
+	ArrayList<OracleIoTBaseClient> iotClientArr = null;
 
 	// to control attached LED (if RPI)
 	private MyLED led = null;
@@ -109,28 +118,19 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 			activateLED((Integer) getProperty("pin.num"));
 		}
 
-		// define MsgParser
-		String MSG_TYPE = (String) getProperty("msg.type");
-		parser = MessageParserFactory.createParser(MSG_TYPE);
+		// define MsgParserArr
+		parserArr = MessageParserFactory.createParser();
 
-		if ((boolean) getProperty("mode.test") == false)
-		{
-			// NOT in TEST MODE.. will really send to IoT CS
+		// introduced a factory to support polymorphism for send()
+		// create a different client depending from MSG_TYPE
+		String TA_PATHNAME = (String) getProperty("ta.pathname");
 
-			// introduced a factory to support polymorphism for send()
-			// create a different client depending from MSG_TYPE
-			String TA_PATHNAME = (String) getProperty("ta.pathname");
+		// must decrypt the password using CryptoService
+		String TA_STORE_PWD = decrypt((String) getProperty("ta.pwd"));
 
-			// must decrypt the password using CryptoService
-			String TA_STORE_PWD = decrypt((String) getProperty("ta.pwd"));
+		info("ta_store_pwd: " + TA_STORE_PWD);
 
-			info("ta_store_pwd: " + TA_STORE_PWD);
-
-			iotClient = IoTClientFactory.createIoTClient(MSG_TYPE, TA_PATHNAME, TA_STORE_PWD);
-
-			// reset to force activation
-			isOracleClientActivated = false;
-		}
+		iotClientArr = IoTClientFactory.createIoTClient(TA_PATHNAME, TA_STORE_PWD);
 	}
 
 	protected void deactivate(ComponentContext componentContext)
@@ -141,11 +141,6 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 		String TOPIC = (String) getProperty("msg.topic");
 
 		unSubscribe(TOPIC);
-
-		iotClient = null;
-
-		// reset to force activation
-		isOracleClientActivated = false;
 	}
 
 	/*
@@ -163,14 +158,6 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 			handleMsgTopicChanged(properties);
 		}
 
-		// change msg.type
-		if (hasPropertyChanged(properties, "msg.type"))
-		{
-			// MSG_TYPE changed
-			info("MSG_TYPE changed!");
-
-			handleMsgTypeChanged(properties);
-		}
 
 		// changed ta pathname
 		if (hasPropertyChanged(properties, "ta.pathname"))
@@ -219,13 +206,12 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 		{
 			// introduced a factory to support polymorphism for send()
 			// create a different client depending from MSG_TYPE
-			String MSG_TYPE = (String) properties.get("msg.type");
 			String TA_PATHNAME = (String) properties.get("ta.pathname");
 
 			// must decrypt the password using CryptoService
 			String TA_STORE_PWD = decrypt((String) properties.get("ta.pwd"));
 
-			iotClient = IoTClientFactory.createIoTClient(MSG_TYPE, TA_PATHNAME, TA_STORE_PWD);
+			iotClientArr = IoTClientFactory.createIoTClient(TA_PATHNAME, TA_STORE_PWD);
 
 			// reset to force activation
 			isOracleClientActivated = false;
@@ -246,14 +232,6 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 		activateLED(PIN_NUM);
 	}
 
-	private void handleMsgTypeChanged(Map<String, Object> properties)
-	{
-		parser = MessageParserFactory.createParser((String) properties.get("msg.type"));
-
-		// should check if to create a new IoTClient
-		// should solve the bug when you change MSG_TYPE at runtime
-		handleTestModeChanged(properties);
-	}
 
 	private void handleMsgTopicChanged(Map<String, Object> properties)
 	{
@@ -305,7 +283,7 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 	{
 
 	}
-	
+
 	/**
 	 * 
 	 * onMessageArrived
@@ -331,7 +309,14 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 			{
 				try
 				{
-					iotClient.activateOracleGateway();
+					Iterator<OracleIoTBaseClient> it = iotClientArr.iterator();
+					
+					while (it.hasNext())
+					{
+						OracleIoTBaseClient bc = (OracleIoTBaseClient) it.next();
+					    
+						bc.activateOracleGateway();
+					}
 
 					isOracleClientActivated = true;
 				} catch (Exception e)
@@ -350,27 +335,38 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 
 			// transform the MQTT payload in a String
 			String msg = new String(payload);
+
+			// recognize msg type
+			int iMsg = recognizeMsg(msg);
 			
+			info("Message Type is: " + iMsg);
+
 			// log message only if enabled
-			msgLog(msg);
+			msgLog(iMsg, msg);
 
 			// NO test mode... send the msg to IoT
 			if (!isTestMode())
 			{
 				// switch eliminated using polimorphism and set of derived classes
-				iotClient.send(parser.parse(msg));
+				// which one?
+				
+				
+				if (iMsg > 0)
+				{
+					// recognized...
+					iotClientArr.get(iMsg).send(parserArr.get(iMsg).parse(msg));
+				}
 			}
 		}
 
 	}
-	
-	private void dump(String msg_type, String msg)
+
+	private void dump(String msg)
 	{
 		// this object take care of the appropriate action for each type of msg
-		new MessageDumper().dump(msg_type, msg);
+		new MessageDumper().dump(recognizeMsg(msg), msg);
 	}
-	
-	
+
 	@Override
 	public void onMessageConfirmed(int arg0, String arg1)
 	{
@@ -481,13 +477,13 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 	 * introduced to support the definition of TOPIC with wildcard single level (+)
 	 * for example device/+/data
 	 * 
-	 * check if msgTopic is compatible with definedTopic (using +)
-	 * this way we can subscribe to a SET of topics
+	 * check if msgTopic is compatible with definedTopic (using +) this way we can
+	 * subscribe to a SET of topics
 	 */
 	private boolean areCompatibleTopics(String msgTopic, String definedTopic)
 	{
 		String SEPARATOR = "/";
-		
+
 		boolean vRit = true;
 
 		// split strings
@@ -542,25 +538,50 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 		}
 		return out;
 	}
-	
+
 	/*
 	 * 
 	 * log incoming messages. If test mode, parse and dump contents
 	 * 
 	 */
-	private void msgLog(String msg)
+	private void msgLog(int msgType, String msg)
 	{
-		if ((boolean)getProperty("msglog.enable") == true)
+		if ((boolean) getProperty("msglog.enable") == true)
 		{
 			s_logger.info(msg);
-			
+
 			if (isTestMode())
 			{
-				dump((String)getProperty("msg.type"), msg);
+				dump(msg);
 			}
 		}
 	}
-	
+
+	private int recognizeMsg(String msg)
+	{
+		int vRit = -1;
+
+		if (msg.contains("PM10"))
+		{
+			vRit = TYPE_AIRCARE;
+		}
+		if (msg.contains("Source"))
+		{
+			vRit = TYPE_EDISON; 
+		}
+		if (msg.contains("CARID"))
+		{
+			vRit = TYPE_OBD2; 
+		}
+		
+		if (msg.contains("DEV_ID"))
+		{
+			vRit = TYPE_TEMP;
+		}
+		
+		return vRit;
+	}
+
 	/*
 	 * utility methods for logging
 	 * 

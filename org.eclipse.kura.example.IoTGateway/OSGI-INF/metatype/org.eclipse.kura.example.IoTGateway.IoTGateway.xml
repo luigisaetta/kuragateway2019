@@ -40,16 +40,6 @@
 			required="true" default="device/AIRCARE/MSG"
 			description="The MQTT TOPIC we're subscribing (can contain + for single level wildcard)" />
 
-		<AD id="msg.type" name="msg.type" type="String" cardinality="0"
-			required="true" default="AIRCARE" 
-			description="The Message Type">
-			<Option label="OBD2" value="OBD2" />
-			<Option label="TEMP" value="TEMP" />
-			<Option label="BLE" value="BLE" />
-			<Option label="EDISON" value="EDISON" />
-			<Option label="SMART_LIGHT" value="SMART_LIGHT" />
-			<Option label="AIRCARE" value="AIRCARE" />
-		</AD>
 		
 		<AD id="pin.num" name="pin.num" type="Integer"
 			cardinality="0" required="true" default="17"
