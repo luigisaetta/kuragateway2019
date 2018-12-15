@@ -25,7 +25,6 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 	/*
 	 * Parameters configurable from UI
 	 */
-	// here I have access to the Configurable properties
 	private Map<String, Object> properties;
 
 	// MQTT
@@ -43,7 +42,7 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 	// to control attached LED (if RPI)
 	private MyLED led = null;
 
-	// to handle lazy activation of the gateway
+	// to handle Lazy Activation of the gateway
 	private static boolean isOracleClientActivated = false;
 
 	public IoTGateway()
