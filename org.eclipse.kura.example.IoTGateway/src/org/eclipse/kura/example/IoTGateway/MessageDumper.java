@@ -83,6 +83,7 @@ public class MessageDumper
 			{
 				info("CARID: " + oMsg.getCarId());
 				info("Coolant Temp: " + oMsg.getCoolantTemp());
+				info("Speed: " + oMsg.getSpeed());
 			}
 			break;
 		}
