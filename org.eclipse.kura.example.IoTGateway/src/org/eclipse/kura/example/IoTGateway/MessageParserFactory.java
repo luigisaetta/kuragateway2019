@@ -26,6 +26,7 @@ public class MessageParserFactory
 	{
 		ArrayList<MessageParser> list = new ArrayList<MessageParser>();
 
+		// MUST be in the same order than the constant on top (TYPE_)
 		list.add(new AircareMessageParser());
 		list.add(new EdisonMessageParser());
 		list.add(new OBD2MessageParser());
