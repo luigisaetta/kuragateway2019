@@ -58,6 +58,8 @@ public class MySQLWriter
 	public void insert(String msg, int iMsg)
 	{
 		// insert into MySQL
+		// msg: the JSON msg
+		//iMsg: type of msg (see MessageParserFactory)
 		try
 		{
 			long ts = System.currentTimeMillis() / 1000; // ts in sec.
