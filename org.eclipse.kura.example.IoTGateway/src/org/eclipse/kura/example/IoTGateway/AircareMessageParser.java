@@ -14,8 +14,6 @@ public class AircareMessageParser extends MessageParser
 
 		if (isPayloadOK(mess))
 		{
-			info("Parsing...");
-			
 			try
 			{
 				mess = encodeUTF8(mess);

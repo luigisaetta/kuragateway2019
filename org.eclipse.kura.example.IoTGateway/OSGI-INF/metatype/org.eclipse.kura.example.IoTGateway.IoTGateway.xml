@@ -45,14 +45,14 @@
 			cardinality="0" required="true" default="17"
 			description="The GPIO pin used for LED BLINK" />
 		
-		<AD id="topic.recognition" name="topic.recognition" 
-		    type="Boolean"
-			cardinality="0" 
-			required="true" 
-			default="false"
-			description="Enable TOPIC based message recognition (experimental)">
-		</AD>	
-
+		<AD
+			id="topic.config"
+			name="Topic definition"
+			description="The list of the topics we're subscribing on|TextArea"
+			type="String"
+			cardinality="1"
+			required="false"
+			default="" />
 	</OCD>
 
 	<Designate
