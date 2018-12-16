@@ -22,4 +22,6 @@ Import-Package: javax.crypto,
 Service-Component: OSGI-INF/component.xml
 Bundle-ClassPath: .,
  lib/device-library.jar,
- lib/json-20160212.jar
+ lib/json-20160212.jar,
+ lib/mysql-connector-java-5.1.47-bin.jar,
+ lib/mysql-connector-java-5.1.47.jar

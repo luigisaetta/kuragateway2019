@@ -19,6 +19,8 @@ import org.eclipse.kura.data.DataService;
 import org.eclipse.kura.data.listener.DataServiceListener;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.*;
+
+
 import org.eclipse.kura.gpio.*;
 import org.eclipse.kura.crypto.CryptoService;
 
@@ -55,6 +57,9 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 
 	// to handle Lazy Activation of the gateway
 	private static boolean isOracleClientActivated = false;
+	
+	// WriterToMySQL
+	private MySQLWriter dbwriter = new MySQLWriter();
 
 	public IoTGateway()
 	{
@@ -133,6 +138,9 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 		info("ta_store_pwd: " + TA_STORE_PWD);
 
 		iotClientArr = IoTClientFactory.createIoTClient(TA_PATHNAME, TA_STORE_PWD);
+		
+		// open connection to MySQL
+		dbwriter.activate();
 	}
 
 	protected void deactivate(ComponentContext componentContext)
@@ -143,6 +151,9 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 		String TOPIC = (String) getProperty("msg.topic");
 
 		unSubscribe(TOPIC);
+		
+		// close connection to DB MySQL
+		dbwriter.deactivate();
 	}
 
 	/*
@@ -322,7 +333,7 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 			// log message only if enabled
 			msgLog(msg);
 						
-			// recognize msg type
+			// recognize MSG_TYPE
 			int iMsg = MessageParserFactory.recognizeMsg(msg);
 
 			info("Message Type is: " + iMsg);
@@ -338,6 +349,9 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 					iotClientArr.get(iMsg).send(parserArr.get(iMsg).parse(msg));
 				}
 			}
+			
+			// write in MySQL
+			dbwriter.insert(msg, iMsg);
 		}
 
 	}
