@@ -54,7 +54,7 @@ public class MessageParserFactory
 			vRit = TYPE_OBD2;
 		}
 
-		if (msg.contains("DEV_ID"))
+		if (msg.contains("DEV_ID") && msg.contains("TEMP"))
 		{
 			vRit = TYPE_TEMP;
 		}
