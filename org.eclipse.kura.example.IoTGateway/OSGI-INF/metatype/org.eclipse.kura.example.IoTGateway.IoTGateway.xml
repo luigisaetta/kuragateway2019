@@ -10,8 +10,9 @@
 			cardinality="0" 
 			required="true" 
 			default="true"
-			description="Test mode">
+			description="Test mode (if true no msg sent to IoT, only logged)">
 		</AD>	
+		
 		<AD id="msglog.enable" name="msglog.enable" 
 		    type="Boolean"
 			cardinality="0" 
@@ -19,6 +20,15 @@
 			default="false"
 			description="Enable logging of incoming messages">
 		</AD>
+		
+		<AD id="mysql.enable" name="mysql.enable" 
+		    type="Boolean"
+			cardinality="0" 
+			required="true" 
+			default="false"
+			description="Enable storage of messages in MySQL">
+		</AD>
+		
 		<AD id="blink.enable" name="blink.enable" 
 		    type="Boolean"
 			cardinality="0" 

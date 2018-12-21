@@ -43,30 +43,30 @@ public class MessageParserFactory
 
 		if (msg.toLowerCase().contains("pm10"))
 		{
-			vRit = TYPE_AIRCARE;
+			return TYPE_AIRCARE;
 		}
 		if (msg.contains("Source"))
 		{
-			vRit = TYPE_EDISON;
+			return TYPE_EDISON;
 		}
 		if (msg.contains("CARID"))
 		{
-			vRit = TYPE_OBD2;
+			return TYPE_OBD2;
 		}
 
 		if (msg.contains("DEV_ID") && msg.contains("TEMP"))
 		{
-			vRit = TYPE_TEMP;
+			return TYPE_TEMP;
 		}
 
 		if (msg.toLowerCase().contains("uuid"))
 		{
-			vRit = TYPE_BLE;
+			return TYPE_BLE;
 		}
 
 		if (msg.toLowerCase().contains("light_status"))
 		{
-			vRit = TYPE_LIGHT;
+			return TYPE_LIGHT;
 		}
 
 		return vRit;
