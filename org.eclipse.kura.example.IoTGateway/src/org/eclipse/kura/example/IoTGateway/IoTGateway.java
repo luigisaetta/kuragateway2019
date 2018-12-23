@@ -303,6 +303,8 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 	@Override
 	public void onMessageArrived(String topic, byte[] payload, int qos, boolean retained)
 	{
+		long tStart = System.currentTimeMillis();
+		
 		info(" Message arrived on topic " + topic);
 
 		// is on the subscribed topic?
@@ -353,6 +355,10 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 			// write in MySQL
 			dbwriter.insert(msg, iMsg);
 		}
+		
+		long tElapsed = (System.currentTimeMillis() - tStart);
+		
+		info("Elapsed time to process msg(msec) : " + tElapsed);
 
 	}
 
