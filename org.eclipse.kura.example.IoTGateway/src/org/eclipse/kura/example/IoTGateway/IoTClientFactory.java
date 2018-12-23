@@ -20,7 +20,7 @@ import java.util.ArrayList;
  */
 public class IoTClientFactory
 {
-	public static ArrayList<OracleIoTBaseClient> createIoTClient(String tasPath, String tasPwd)
+	public static ArrayList<OracleIoTBaseClient> createIoTClients(String tasPath, String tasPwd)
 	{
 		ArrayList<OracleIoTBaseClient> iotClients = new ArrayList<OracleIoTBaseClient>();
 		

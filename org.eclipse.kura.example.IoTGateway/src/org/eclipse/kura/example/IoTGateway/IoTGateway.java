@@ -57,9 +57,6 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 
 	// to handle Lazy Activation of the gateway
 	private static boolean isOracleClientActivated = false;
-	
-	// WriterToMySQL
-	private MySQLWriter dbwriter = new MySQLWriter();
 
 	public IoTGateway()
 	{
@@ -125,8 +122,8 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 			activateLED((Integer) getProperty("pin.num"));
 		}
 
-		// define MsgParserArr
-		parserArr = MessageParserFactory.createParser();
+		// define MsgParserArr: create a list of MessageParser
+		parserArr = MessageParserFactory.createParsers();
 
 		// introduced a factory to support polymorphism for send()
 		// create a different client depending from MSG_TYPE
@@ -136,11 +133,9 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 		String TA_STORE_PWD = decrypt((String) getProperty("ta.pwd"));
 
 		info("ta_store_pwd: " + TA_STORE_PWD);
-
-		iotClientArr = IoTClientFactory.createIoTClient(TA_PATHNAME, TA_STORE_PWD);
 		
-		// open connection to MySQL
-		dbwriter.activate();
+		// create a list of IoTClients
+		iotClientArr = IoTClientFactory.createIoTClients(TA_PATHNAME, TA_STORE_PWD);
 	}
 
 	protected void deactivate(ComponentContext componentContext)
@@ -151,9 +146,6 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 		String TOPIC = (String) getProperty("msg.topic");
 
 		unSubscribe(TOPIC);
-		
-		// close connection to DB MySQL
-		dbwriter.deactivate();
 	}
 
 	/*
@@ -223,7 +215,7 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 			// must decrypt the password using CryptoService
 			String TA_STORE_PWD = decrypt((String) properties.get("ta.pwd"));
 
-			iotClientArr = IoTClientFactory.createIoTClient(TA_PATHNAME, TA_STORE_PWD);
+			iotClientArr = IoTClientFactory.createIoTClients(TA_PATHNAME, TA_STORE_PWD);
 
 			// reset to force activation
 			isOracleClientActivated = false;
@@ -351,11 +343,8 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 					iotClientArr.get(iMsg).send(parserArr.get(iMsg).parse(msg));
 				}
 			}
-			
-			// write in MySQL
-			dbwriter.insert(msg, iMsg);
 		}
-		
+		// register time needed to process msg
 		long tElapsed = (System.currentTimeMillis() - tStart);
 		
 		info("Elapsed time to process msg(msec) : " + tElapsed);
@@ -542,7 +531,7 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 	{
 		return (boolean) getProperty("blink.enable");
 	}
-
+	
 	/*
 	 * 
 	 * to decrypt the pwd, using CryptoService

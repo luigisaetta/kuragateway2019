@@ -21,14 +21,6 @@
 			description="Enable logging of incoming messages">
 		</AD>
 		
-		<AD id="mysql.enable" name="mysql.enable" 
-		    type="Boolean"
-			cardinality="0" 
-			required="true" 
-			default="false"
-			description="Enable storage of messages in MySQL">
-		</AD>
-		
 		<AD id="blink.enable" name="blink.enable" 
 		    type="Boolean"
 			cardinality="0" 

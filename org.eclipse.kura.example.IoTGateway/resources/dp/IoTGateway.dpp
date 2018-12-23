@@ -1,20 +1,20 @@
 #Deployment Plugin Project File
-#Sun Dec 16 16:39:13 CET 2018
+#Sun Dec 23 14:46:32 CET 2018
 build.ant.name=<.>/resources/dp/IoTGateway_build.xml
 build.dp.file=<.>/resources/dp/IoTGateway.dp
 build.location=
-bundles.0.bundle_path=/Users/LSaetta/kura/workspace/org.eclipse.kura.example.IoTGateway/plugins/org.eclipse.kura.example.IoTGateway_1.2.0.201812161638.jar
+bundles.0.bundle_path=/Users/LSaetta/kura/workspace/org.eclipse.kura.example.IoTGateway/plugins/org.eclipse.kura.example.IoTGateway_1.2.0.201812231445.jar
 bundles.0.customizer=false
 bundles.0.headers.count=0
 bundles.0.missing=false
-bundles.0.name=bundles/org.eclipse.kura.example.IoTGateway_1.2.0.201812161638.jar
+bundles.0.name=bundles/org.eclipse.kura.example.IoTGateway_1.2.0.201812231445.jar
 bundles.0.symbolic_name=org.eclipse.kura.example.IoTGateway
-bundles.0.version=1.2.0.201812161638
+bundles.0.version=1.2.0.201812231445
 bundles.count=1
 certificates.count=0
 general.signbundles=false
 headers.other.headers=
 headers.symbolic.name=OracIeIoTGateway
-headers.version=2.1.84
+headers.version=2.1.90
 resources.count=0
 

@@ -21,7 +21,7 @@ public class OracleIoTBLEClient extends OracleIoTBaseClient
 	public void send(Message msg)
 	{
 		// still in test
-		info("Msg sent to Iot...");
+		info("Send to IoT: not yet implemented !!!");
 	}
 
 }

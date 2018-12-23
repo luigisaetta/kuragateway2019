@@ -29,23 +29,17 @@ public class MessageDumper
 {
 	private static final Logger s_logger = LoggerFactory.getLogger(MessageDumper.class);
 	
-	private static final int TYPE_AIRCARE = 0;
-	private static final int TYPE_EDISON = 1;
-	private static final int TYPE_OBD2 = 2;
-	private static final int TYPE_TEMP = 3;
-	private static final int TYPE_BLE = 4;
-	private static final int TYPE_LIGHT = 5;
 	
 	public void dump(String msg)
 	{
-		ArrayList<MessageParser> parserArr = MessageParserFactory.createParser();
+		ArrayList<MessageParser> parserArr = MessageParserFactory.createParsers();
 		
 		// recognize msgType
 		int msgIndex = MessageParserFactory.recognizeMsg(msg);
 		
 		switch (msgIndex)
 		{
-		 case TYPE_BLE:
+		 case MessageParserFactory.TYPE_BLE:
 			BLEMessage bMsg = (BLEMessage) parserArr.get(msgIndex).parse(msg);
 
 			if ((bMsg != null) && (bMsg.getMetrics() != null))
@@ -56,7 +50,7 @@ public class MessageDumper
 			}
 			break;
 		
-		case TYPE_EDISON:
+		case MessageParserFactory.TYPE_EDISON:
 			EdisonMessage eMsg = (EdisonMessage) parserArr.get(msgIndex).parse(msg);
 
 			if (eMsg != null)
@@ -68,7 +62,7 @@ public class MessageDumper
 			}
 			break;
 
-		case TYPE_LIGHT:
+		case MessageParserFactory.TYPE_LIGHT:
 			SmartLightMessage sMsg = (SmartLightMessage) parserArr.get(msgIndex).parse(msg);
 
 			if (sMsg != null)
@@ -77,7 +71,7 @@ public class MessageDumper
 			}
 			break;
 		
-		case TYPE_TEMP:
+		case MessageParserFactory.TYPE_TEMP:
 			TempMessage tMsg = (TempMessage) parserArr.get(msgIndex).parse(msg);
 
 			if (tMsg != null)
@@ -88,7 +82,7 @@ public class MessageDumper
 			}
 			break;
 			
-		case TYPE_AIRCARE:
+		case MessageParserFactory.TYPE_AIRCARE:
 			AircareMessage aMsg = (AircareMessage) parserArr.get(msgIndex).parse(msg);
 
 			if (aMsg != null)
@@ -99,7 +93,7 @@ public class MessageDumper
 			}
 			break;
 		
-		case TYPE_OBD2:
+		case MessageParserFactory.TYPE_OBD2:
 			OBD2Message oMsg = (OBD2Message) parserArr.get(msgIndex).parse(msg);
 
 			if (oMsg != null)

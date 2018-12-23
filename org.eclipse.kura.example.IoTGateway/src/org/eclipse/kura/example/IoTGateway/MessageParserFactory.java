@@ -15,14 +15,14 @@ import java.util.ArrayList;
 
 public class MessageParserFactory
 {
-	private static final int TYPE_AIRCARE = 0;
-	private static final int TYPE_EDISON = 1;
-	private static final int TYPE_OBD2 = 2;
-	private static final int TYPE_TEMP = 3;
-	private static final int TYPE_BLE = 4;
-	private static final int TYPE_LIGHT = 5;
+	public static final int TYPE_AIRCARE = 0;
+	public static final int TYPE_EDISON = 1;
+	public static final int TYPE_OBD2 = 2;
+	public static final int TYPE_TEMP = 3;
+	public static final int TYPE_BLE = 4;
+	public static final int TYPE_LIGHT = 5;
 
-	public static ArrayList<MessageParser> createParser()
+	public static ArrayList<MessageParser> createParsers()
 	{
 		ArrayList<MessageParser> list = new ArrayList<MessageParser>();
 
