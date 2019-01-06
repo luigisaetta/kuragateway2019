@@ -106,36 +106,42 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 	 */
 	protected void activate(ComponentContext componentContext, Map<String, Object> properties)
 	{
-		info("Bundle " + APP_ID + " has started with config!");
-
-		// save the config
-		this.properties = properties;
-
-		// subscribe to TOPIC
-		String TOPIC = (String) getProperty("msg.topic");
-
-		subscribe(TOPIC);
-
-		// define OUTPUT PIN
-		if ((boolean) getProperty("blink.enable"))
+		try
 		{
-			activateLED((Integer) getProperty("pin.num"));
+			info("Bundle " + APP_ID + " has started with config!");
+
+			// save the config
+			this.properties = properties;
+
+			// subscribe to TOPIC
+			String TOPIC = (String) getProperty("msg.topic");
+
+			subscribe(TOPIC);
+
+			// define OUTPUT PIN
+			if ((boolean) getProperty("blink.enable"))
+			{
+				activateLED((Integer) getProperty("pin.num"));
+			}
+
+			// define MsgParserArr: create a list of MessageParser
+			parserArr = MessageParserFactory.createParsers();
+
+			// introduced a factory to support polymorphism for send()
+			// create a different client depending from MSG_TYPE
+			String TA_PATHNAME = (String) getProperty("ta.pathname");
+
+			// must decrypt the password using CryptoService
+			String TA_STORE_PWD = decrypt((String) getProperty("ta.pwd"));
+
+			info("ta_store_pwd: " + TA_STORE_PWD);
+			
+			// create a list of IoTClients
+			iotClientArr = IoTClientFactory.createIoTClients(TA_PATHNAME, TA_STORE_PWD);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
 		}
-
-		// define MsgParserArr: create a list of MessageParser
-		parserArr = MessageParserFactory.createParsers();
-
-		// introduced a factory to support polymorphism for send()
-		// create a different client depending from MSG_TYPE
-		String TA_PATHNAME = (String) getProperty("ta.pathname");
-
-		// must decrypt the password using CryptoService
-		String TA_STORE_PWD = decrypt((String) getProperty("ta.pwd"));
-
-		info("ta_store_pwd: " + TA_STORE_PWD);
-		
-		// create a list of IoTClients
-		iotClientArr = IoTClientFactory.createIoTClients(TA_PATHNAME, TA_STORE_PWD);
 	}
 
 	protected void deactivate(ComponentContext componentContext)
@@ -479,10 +485,19 @@ public class IoTGateway implements DataServiceListener, ConfigurableComponent
 	private boolean hasPropertyChanged(Map<String, Object> newSet, String label)
 	{
 		// compare with oldSet
-		if (!getProperty(label).equals(newSet.get(label)))
-			return true; // changed
+		Object oldProperty = getProperty(label);
+		Object newProperty = newSet.get(label);
+		
+		if ((oldProperty != null) && (newProperty != null))
+		{
+			if (!getProperty(label).equals(newSet.get(label)))
+				return true; // changed
+			else
+				return false;
+		}
 		else
 			return false;
+		
 	}
 
 	/*

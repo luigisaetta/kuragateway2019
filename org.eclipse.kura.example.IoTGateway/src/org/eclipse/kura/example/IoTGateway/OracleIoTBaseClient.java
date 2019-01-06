@@ -98,11 +98,11 @@ public class OracleIoTBaseClient
 			List<String> modelList = new ArrayList<String>();
 			
 			// define list of supported DeviceModel
-			modelList.add(OBD2Model.OBD2_URN_MSG);
-			modelList.add(TemperatureModel.TEMP_URN_MSG);
-			modelList.add(SmartLightModel.LIGHT_URN_MSG);
-			modelList.add(EdisonModel.EDI_URN_MSG);
 			modelList.add(AircareModel.AIRCARE_URN_MSG);
+			modelList.add(EdisonModel.EDI_URN_MSG);
+			modelList.add(OBD2Model.OBD2_URN_MSG);
+			modelList.add(SmartLightModel.LIGHT_URN_MSG);
+			modelList.add(TemperatureModel.TEMP_URN_MSG);
 			
 			// load in tableDevModel
 			for(String modelType : modelList) 
